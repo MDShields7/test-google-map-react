@@ -6,9 +6,9 @@ import Geocode from "react-geocode";
 // MDS Matt Shields note
 // GEN package creator note
 
-// MDS yarn add gogole-map-react
+// MDS yarn add google-map-react
 // MDS yarn add react-app-env
-// MDS yarn add dotenv-webpack  *NOTE: frontend env version*
+// MDS yarn add dotenv-webpack  *NOTE: frontend env version*hello
 
 // MDS Get your free Google API key from google, free unless it gets 25K+ hits per week.
 // MDS Put key in env file
@@ -22,10 +22,9 @@ class SimpleMap extends Component {
   constructor(){
     super()
     this.state = {
-      place: 'Indianapolis',
+      place: 'Tuscon',
       center: { // MDS Center needed for default zoom
-        lat: 0,
-        lng: 0
+
     },
     zoom: 11, // MDS Initial zoom of map
     coordsLoaded: false,
@@ -34,30 +33,30 @@ class SimpleMap extends Component {
     // MDS Geocode is a promise, so we must wait until the promise is returned to render the map 
   componentDidMount = () => {
     this.getCoordinates();
+  }
+  
+  getCoordinates = async () => {
+    // GEN set Google Maps Geocoding API for purposes of quota management. Its optional but recommended.
+    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAP_API_KEY); // MDS This appears toi be required.
+    // GEN Enable or disable logs. Its optional.
+    Geocode.enableDebug();
+    
+    await Geocode.fromAddress(this.state.place).then(
+      response => {
+        const { lat, lng } = response.results[0].geometry.location;
+        const center = {lng: lng, lat: lat}
+        console.log(lat, lng);
+        this.setState({
+          center: center
+        })
+      },
+      error => {
+        console.error(error);
+      }
+      );
     this.setState({
       coordsLoaded: true
     })
-  }
-
-  getCoordinates = () => {
-        // GEN set Google Maps Geocoding API for purposes of quota management. Its optional but recommended.
-        Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAP_API_KEY); // MDS This appears toi be required.
-        // GEN Enable or disable logs. Its optional.
-        Geocode.enableDebug();
-
-        Geocode.fromAddress(this.state.place).then(
-          response => {
-            const { lat, lng } = response.results[0].geometry.location;
-            const center = {lng: lng, lat: lat}
-            console.log(lat, lng);
-            this.setState({
-              center: center
-            })
-          },
-          error => {
-            console.error(error);
-          }
-        );
   };
 
   render() {
@@ -73,7 +72,7 @@ class SimpleMap extends Component {
           <AnyReactComponent 
             lat={this.state.center.lat}
             lng={this.state.center.lng}
-            text={this.state.tower}
+            text={this.state.place}
           />
           <AnyReactComponent2
             lat={42} // rough coordinate for Chicago
